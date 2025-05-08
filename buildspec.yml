@@ -1,0 +1,19 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+    commands:
+      - echo Installing dependencies...
+      - mvn install -DskipTests
+
+  build:
+    commands:
+      - echo Running tests...
+      - mvn test
+
+artifacts:
+  files:
+    - target/*.jar
+    - target/surefire-reports/*.xml

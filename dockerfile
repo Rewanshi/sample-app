@@ -1,12 +1,21 @@
-# Stage 1: Build the app
-FROM maven:3.9.4-eclipse-temurin-17 AS build
-WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN mvn package -DskipTests
+# Use Maven image with Java 21 installed
+FROM jelastic/maven:3.9.5-openjdk-21
 
-# Stage 2: Create runtime image
-FROM eclipse-temurin:17-jdk
+# Set the working directory inside the container
 WORKDIR /app
-COPY --from=build /app/target/sample-app-1.0-SNAPSHOT.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Copy the pom.xml file and download dependencies
+COPY pom.xml .
+# RUN mvn dependency:go-offline
+
+# Copy the entire project source code into the container
+COPY src ./src
+
+# Build the application
+RUN mvn clean install
+
+# Expose the port that the application will run on
+EXPOSE 8080
+
+# Run the application
+CMD ["java", "-jar", "target/hello-0.0.1-SNAPSHOT.jar"]
